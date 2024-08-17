@@ -1,0 +1,167 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+:root{
+    --primary-color : rgb(1, 0, 31);
+    --button-color : rgb(2, 0, 63);
+    --text-color : white;
+}
+body{
+    background-color: var(--primary-color); 
+    color: var(--text-color);
+    font-family: "Montserrat", sans-serif;
+    min-height: 100vh;
+}
+header{
+    color: orange;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+header img{
+    width: 120px;
+    height: auto;
+}
+
+/* Build up your champion tier list style */
+.title{
+    padding: 20px;
+    font-size: 20px;
+}
+
+/* lanes selector */
+.lanes-container{
+    display: flex;
+    gap: 5px;
+    background-color: rgb(16, 16, 49);
+    padding: 3px;
+    border-radius: 10px;
+    width: fit-content;
+    margin-left: 30px;
+}
+.lanes-container .lane{
+    background-color: var(--button-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 10px;
+    padding: 7px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.lanes-container .lane.selected{
+    border: 1px solid gray;
+    background-color: rgb(16, 16, 49);
+    pointer-events: none;
+}
+.lanes-container .lane:hover{
+    background-color:rgb(1, 0, 32) ;
+}
+
+/* tier list boxes design */
+.tiers-container{
+    padding: 20px;
+
+}
+.tiers-container .tier{
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    width: 90%;
+    height: 100%;
+
+}
+.tiers-container .tier p{
+    padding: 25px;
+    width: 5em;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tiers-container .tier .box{
+    border: 1px solid gray;
+    background-color: rgb(75, 75, 75);
+    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 0;
+}
+.tiers-container .tier .box img{
+    width: 90px;
+    height: auto;
+}
+.tiers-container .tier .box img.moving{
+    opacity: .5;
+}
+
+/* each tier bg color */
+.tiers-container .tier.s p{
+    background-color: darkred;
+}
+.tiers-container .tier.a p{
+    background-color: green;
+}
+.tiers-container .tier.b p{
+    background-color: yellow;
+}
+.tiers-container .tier.c p{
+    background-color: orangered;
+}
+.tiers-container .tier.d p{
+    background-color: gray;
+}
+
+/* champions */
+.champions{
+    width: calc(74% + 1rem + 21px);
+    margin: 0 auto;
+}
+.champions img{
+    width: 90px;
+    height: auto;
+}
+.champions img.moving{
+    opacity: .5;
+}
+
+@media screen and (max-width : 552px ) {
+    body{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .tiers-container ,.champions {
+        padding: 10px;
+        margin: 0;
+        width: calc(100% - 10px);
+    }
+    .tiers-container .tier .box{
+        width: 100%;
+        grid-template-columns: repeat(auto-fit , minmax(60px , 10%));
+    }
+    .champions{
+        display: grid;
+        grid-template-columns: repeat(auto-fit , minmax(60px , 10%));
+        gap: 2px 0;
+        justify-content: center;
+    }
+    .tiers-container .tier .box img ,.champions img{
+        width: 60px;
+    }
+    
+}
+@media screen and (max-width : 375px ){
+    .lane{
+        flex-direction: column;
+    }
+
+}
