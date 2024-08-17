@@ -96,6 +96,12 @@ function fillChampions(lane) {
             next_element = e.target.nextElementSibling
             champ.classList.add("moving")
         })
+        // for mobile
+        champ.addEventListener("touchstart" , e=>{
+            dragged = e.target
+            next_element = e.target.nextElementSibling
+            champ.classList.add("moving") 
+        })
     })
 }
 
@@ -123,6 +129,33 @@ boxs.forEach(box=>{
 
 // handling if champ dropped outside the box
 document.addEventListener("dragend", e=>{
+    if(!["box" , "champ"].includes(e.target.className)){
+        console.log("name")
+        champions_container.insertBefore(dragged , next_element)
+        dragged.classList.remove("moving")
+    }
+})
+
+// handling same events for mobile
+boxs.forEach(box=>{
+    box.addEventListener("touchmove", e=>{
+        e.preventDefault()
+
+        // make an indication that the img is dragged over 
+        let targeted = e.target.closest(".box") 
+
+        targeted.appendChild(dragged)
+    })
+    box.addEventListener("touchend" , e=>{
+        e.preventDefault()
+        dragged.classList.remove("moving")
+
+        // track the targeted box to prevent droping on img
+        let targeted = e.target.closest(".box") 
+        targeted.appendChild(dragged)
+    })
+})
+document.addEventListener("touchend", e=>{
     if(!["box" , "champ"].includes(e.target.className)){
         console.log("name")
         champions_container.insertBefore(dragged , next_element)
