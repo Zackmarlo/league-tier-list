@@ -133,7 +133,7 @@ header img{
     opacity: .5;
 }
 
-@media screen and (max-width : 552px ) {
+@media screen and (max-width : 768px ) {
     body{
         display: flex;
         flex-direction: column;
@@ -146,18 +146,21 @@ header img{
     }
     .tiers-container .tier .box{
         width: 100%;
-        grid-template-columns: repeat(auto-fit , minmax(60px , 10%));
+        flex-shrink: 0;
     }
     .champions{
         display: grid;
-        grid-template-columns: repeat(auto-fit , minmax(60px , 10%));
+        grid-template-columns: repeat(auto-fit , minmax(60px , 2%));
         gap: 2px 0;
         justify-content: center;
     }
     .tiers-container .tier .box img ,.champions img{
         width: 60px;
+        height: auto;
     }
-    
+    .lanes-container{
+        margin-left: 0;
+    }
 }
 @media screen and (max-width : 375px ){
     .lane{

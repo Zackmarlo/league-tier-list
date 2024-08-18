@@ -49,12 +49,15 @@ const remake = {"toplane" : toplane , "jungle" : jungle , "midlane" : midlane ,
 
 
 // fill the champions container with the selected lane
-const champions_container = document.querySelector(".champions")
+let champions_container = document.querySelector(".champions")
 const lanes = document.querySelectorAll(".lane")
 let boxs = document.querySelectorAll(".box")
-let selected_lane = 0
+let selected_lane = {index : 0 , lanename:toplane}
 let dragged = null
 let next_element = null
+let touched = 0
+let moved = false
+let champ_clone = null
 // fill the champions first beacuse i'm lasy to do it
 fillChampions(toplane)
 
@@ -62,9 +65,9 @@ fillChampions(toplane)
 lanes.forEach((lane , i)=>{
     lane.addEventListener("click",()=>{
         // change selcted button
-        lanes[selected_lane].classList.remove("selected")
+        lanes[selected_lane.index].classList.remove("selected")
         lane.classList.add("selected")
-        selected_lane = i
+        selected_lane = {index : i , lanename: remake[lane.id]}
         
         // make sure thet the boxes are empty
         boxs.forEach(box=>{
@@ -72,7 +75,7 @@ lanes.forEach((lane , i)=>{
         })
         
         // fill the container
-        fillChampions(remake[lane.id])
+        fillChampions(selected_lane.lanename)
     })
 })
 
@@ -83,6 +86,7 @@ function fillChampions(lane) {
         champ.setAttribute("src",
             `https://cdn.mobalytics.gg/assets/lol/images/dd/champions/icons/${lane[i].toLowerCase()}.png?V3`)
 
+        champ.id = lane[i]
         champ.classList.add("champ")
         champions_container.appendChild(champ)  
     }
@@ -93,15 +97,73 @@ function fillChampions(lane) {
     champs.forEach(champ=>{
         champ.addEventListener("dragstart" , e=>{
             dragged = e.target
-            next_element = e.target.nextElementSibling
+            next_element = champions_container.children[selected_lane.lanename.indexOf(dragged.id)]
             champ.classList.add("moving")
         })
         // for mobile
         champ.addEventListener("touchstart" , e=>{
+            e.preventDefault()
+            if (e.touches.length > 1){
+                return;
+            }
+            // create a dragged target and locate the element next to it
             dragged = e.target
-            next_element = e.target.nextElementSibling
+            next_element = champions_container.children[selected_lane.lanename.indexOf(dragged.id)]
             champ.classList.add("moving") 
+
+            // clone the dragged targeted for style on drag move
+            champ_clone = dragged.cloneNode(true)
         })
+
+        champ.addEventListener('touchmove', e => {
+            e.preventDefault();
+
+            // make sure that the img moved to prevent click bugs
+            moved = true
+            // make the image move when dragged 
+            const touch = e.touches[0];
+            dragged.style.position = 'absolute';
+            dragged.style.left = `${touch.pageX}px`;
+            dragged.style.top = `${touch.pageY}px`;
+
+            // get the coordinates of the finger
+            let touchX = touch.clientX;
+            let touchY = touch.clientY;
+            boxs.forEach(box => {
+                // check if the coordinates matches the box under it
+                let rect = box.getBoundingClientRect();
+                if (touchX >= rect.left && touchX <= rect.right && 
+                    touchY >= rect.top && touchY <= rect.bottom) {
+                    box.appendChild(champ_clone); 
+                }
+            });
+            
+        });
+        champ.addEventListener('touchend', e => {
+            if(e.touches.length + 1 > 1)return;
+            champ_clone.remove()
+            dragged.classList.remove('moving');
+            let touch = e.changedTouches[0];
+            let touchX = touch.clientX;
+            let touchY = touch.clientY;
+            let boxFound = false;
+            boxs.forEach(box => {
+                let rect = box.getBoundingClientRect();
+                if (touchX >= rect.left && touchX <= rect.right && 
+                    touchY >= rect.top && touchY <= rect.bottom) {
+                    box.appendChild(dragged); 
+                    boxFound = true;
+                }
+            });
+            // if droped out side the box return to its origenal place
+            if (!boxFound && moved) {
+                champions_container.insertBefore(dragged, next_element);
+            }
+            dragged.style.position = '';
+            dragged.style.left = '';
+            dragged.style.top = '';
+            moved = false
+        });
     })
 }
 
@@ -113,7 +175,8 @@ boxs.forEach(box=>{
         e.preventDefault()
 
         // make an indication that the img is dragged over 
-        let targeted = e.target.closest(".box") 
+        let targeted = e.target.closest(".box")
+         
 
         targeted.appendChild(dragged)
     })
@@ -130,34 +193,6 @@ boxs.forEach(box=>{
 // handling if champ dropped outside the box
 document.addEventListener("dragend", e=>{
     if(!["box" , "champ"].includes(e.target.className)){
-        console.log("name")
-        champions_container.insertBefore(dragged , next_element)
-        dragged.classList.remove("moving")
-    }
-})
-
-// handling same events for mobile
-boxs.forEach(box=>{
-    box.addEventListener("touchmove", e=>{
-        e.preventDefault()
-
-        // make an indication that the img is dragged over 
-        let targeted = e.target.closest(".box") 
-
-        targeted.appendChild(dragged)
-    })
-    box.addEventListener("touchend" , e=>{
-        e.preventDefault()
-        dragged.classList.remove("moving")
-
-        // track the targeted box to prevent droping on img
-        let targeted = e.target.closest(".box") 
-        targeted.appendChild(dragged)
-    })
-})
-document.addEventListener("touchend", e=>{
-    if(!["box" , "champ"].includes(e.target.className)){
-        console.log("name")
         champions_container.insertBefore(dragged , next_element)
         dragged.classList.remove("moving")
     }
